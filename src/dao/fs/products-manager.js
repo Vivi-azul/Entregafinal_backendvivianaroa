@@ -8,7 +8,7 @@ class ProductManager {
         this.path = path;
     }
 
-    async addProduct({title, description, price, thumbnails, code, stock, category}) {
+    async addProduct({title, description, precio, code, stock, category}) {
         try {
             const arrayProductos = await this.leerArchivo();
         
@@ -32,15 +32,15 @@ class ProductManager {
             status: true
         };
 
-        if (arrayProductos.length > 0) {
-            ProductManager.ultId = arrayProductos.reduce((maxId, product) => Math.max(maxId, product.id), 0);
+        if (arrayProducts.length > 0) {
+            ProductManager.ultId = arrayProducts.reduce((maxId, product) => Math.max(maxId, product.id), 0);
         }
 
-        nuevoProducto.id = ++ProductManager.ultId;
+        nuevoProduct.id = ++ProductManager.ultId;
 
-        arrayProductos.push(nuevoProducto);
+        arrayProducts.push(nuevoProducto);
         
-        await this.guardarArchivo(arrayProductos);
+        await this.guardarArchivo(arrayProducts);
         } catch (error) {
             console.log("Error al agregar producto", error);
             throw error;
@@ -50,7 +50,7 @@ class ProductManager {
     async getProducts() {
         try {
             const arrayProductos = await this.leerArchivo();
-            return arrayProductos;
+            return arrayProducts;
         } catch (error) {
             console.log("Error al leer el archivo", error);
             throw error;
@@ -60,7 +60,7 @@ class ProductManager {
     async getProductById(id) {
         try {
             const arrayProductos = await this.leerArchivo();
-            const producto = arrayProductos.find(item => item.id === id);
+            const producto = arrayProducts.find(item => item.id === id);
             if (!producto) {
                 console.error("Not Found");
                 return null;
@@ -77,7 +77,7 @@ class ProductManager {
     async updateProduct(id, updatedFields) {
         try {
             const arrayProductos = await this.leerArchivo();
-            const index = arrayProductos.findIndex(item => item.id === id);
+            const index = arrayProducts.findIndex(item => item.id === id);
             if (index === -1) {
                 console.error("Producto no encontrado");
                 return null;
@@ -95,15 +95,15 @@ class ProductManager {
 
     async deleteProduct(id) {
         try {
-            const arrayProductos = await this.leerArchivo();
-            const index = arrayProductos.findIndex(item => item.id === id);
+            const arrayProducts = await this.leerArchivo();
+            const index = arrayProducts.findIndex(item => item.id === id);
             if (index === -1) {
                 console.error("Producto no encontrado");
                 return null;
             }
 
            arrayProductos.splice(index, 1);
-            await this.guardarArchivo(arrayProductos);
+            await this.guardarArchivo(arrayProducts);
             console.log(`Producto con ID ${id} eliminado.`);
             return true;
         } catch (error) {
@@ -114,7 +114,7 @@ class ProductManager {
 
     async guardarArchivo(arrayProductos) {
         try {
-            await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2));
+            await fs.writeFile(this.path, JSON.stringify(arrayProducts, null, 2));
         } catch (error) {
             console.log("Error al guardar el archivo: ", error);
             throw error;
@@ -124,8 +124,8 @@ class ProductManager {
     async leerArchivo() {
         try {
             const respuesta = await fs.readFile(this.path, "utf-8");
-            const arrayProductos = JSON.parse(respuesta);
-            return arrayProductos;
+            const arrayProducts = JSON.parse(respuesta);
+            return arrayProducts;
         } catch (error) {
             if (error.code === 'ENOENT') {
                 console.log("El archivo no existe, se creará uno nuevo.");

@@ -1,6 +1,7 @@
 import express from "express";
 import ProductManager from "../dao/db/product-manager-db.js";
 
+
 const router = express.Router();
 
 const productManager = new ProductManager();

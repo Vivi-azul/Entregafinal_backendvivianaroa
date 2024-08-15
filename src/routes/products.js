@@ -17,6 +17,8 @@ router.get("/", async (req, res) => {
             Object.assign(filter, queryObject);
         }
 
+        console.log('Filter:', filter);
+
        
         const sortOption = sort === "asc" ? { precio: 1 } : sort === "desc" ? { precio: -1 } : {};
 
@@ -26,7 +28,11 @@ router.get("/", async (req, res) => {
             sort: sortOption
         };
 
+        console.log('Options:', options);
+
         const result = await productManager.getProducts(filter, options);
+
+        console.log('Result:', result);
 
         const response = {
             status: "success",

@@ -12,6 +12,7 @@ app.use(express.urlencoded({extended: true}));
 
 
 mongoose
+
   .connect("mongodb+srv://viviana_6:Dios66**@cluster0.mqsapxf.mongodb.net/Tienda_ViLu", {
     // useNewUrlParser: true,
     // useUnifiedTopology: true,

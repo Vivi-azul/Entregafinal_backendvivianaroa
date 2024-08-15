@@ -1,4 +1,5 @@
 import fs from 'fs/promises';
+import CartModel from '../models/cart.model';
 
 class ProductManager {
     static ultId = 0;
@@ -10,14 +11,14 @@ class ProductManager {
 
     async addProduct({title, description, precio, code, stock, category}) {
         try {
-            const arrayProductos = await this.leerArchivo();
+            const arrayProducts = await this.leerArchivo();
         
         if (!title || !description || !precio || !code || !stock || !category) {
             console.log("Todos los campos son obligatorios!!");
             return;
         }
 
-        if (arrayProductos.some(item => item.code === code)) {
+        if (arrayProducts.some(item => item.code === code)) {
             console.log("El código debe ser único");
             return;
         }
@@ -36,7 +37,7 @@ class ProductManager {
             ProductManager.ultId = arrayProducts.reduce((maxId, product) => Math.max(maxId, product.id), 0);
         }
 
-        nuevoProduct.id = ++ProductManager.ultId;
+        nuevoProducto.id = ++ProductManager.ultId;
 
         arrayProducts.push(nuevoProducto);
         
@@ -47,10 +48,19 @@ class ProductManager {
         }
     }
 
-    async getProducts() {
+    async getProducts(filter, options) {
         try {
-            const arrayProductos = await this.leerArchivo();
-            return arrayProducts;
+            const arrayProducts = await this.leerArchivo();
+            console.log("Productos leídos:", arrayProducts);
+            return {
+                docs: arrayProducts,   
+                totalPages: 1,          
+                prevPage: null,
+                nextPage: null,
+                page: 1,
+                hasPrevPage: false,
+                hasNextPage: false
+            };
         } catch (error) {
             console.log("Error al leer el archivo", error);
             throw error;
@@ -59,7 +69,7 @@ class ProductManager {
 
     async getProductById(id) {
         try {
-            const arrayProductos = await this.leerArchivo();
+            const arrayProducts = await this.leerArchivo();
             const producto = arrayProducts.find(item => item.id === id);
             if (!producto) {
                 console.error("Not Found");
@@ -76,17 +86,17 @@ class ProductManager {
 
     async updateProduct(id, updatedFields) {
         try {
-            const arrayProductos = await this.leerArchivo();
+            const arrayProducts = await this.leerArchivo();
             const index = arrayProducts.findIndex(item => item.id === id);
             if (index === -1) {
                 console.error("Producto no encontrado");
                 return null;
             }
 
-            const productoActualizado = { ...arrayProductos[index], ...updatedFields, id };
+            const productoActualizado = { ...arrayProducts[index], ...updatedFields, id };
 
-            arrayProductos[index] = productoActualizado;
-            await this.guardarArchivo(arrayProductos);
+            arrayProducts[index] = productoActualizado;
+            await this.guardarArchivo(arrayProducts);
             return productoActualizado;
         } catch (error) {
             console.log("Error al actualizar el producto: ", error);
@@ -102,7 +112,7 @@ class ProductManager {
                 return null;
             }
 
-           arrayProductos.splice(index, 1);
+           arrayProducts.splice(index, 1);
             await this.guardarArchivo(arrayProducts);
             console.log(`Producto con ID ${id} eliminado.`);
             return true;
@@ -112,7 +122,7 @@ class ProductManager {
         }
     }
 
-    async guardarArchivo(arrayProductos) {
+    async guardarArchivo(arrayProducts) {
         try {
             await fs.writeFile(this.path, JSON.stringify(arrayProducts, null, 2));
         } catch (error) {
